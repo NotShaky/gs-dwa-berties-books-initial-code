@@ -29,10 +29,10 @@ router.post('/bookadded', function (req, res, next) {
     let newrecord = [req.body.name, req.body.price]
     db.query(sqlquery, newrecord, (err, result) => {
         if (err) {
-            next(err)
+            return next(err)
         }
-        else
-            res.send(' This book is added to database, name: '+ req.body.name + ' price '+ req.body.price)
+        // render a confirmation page
+        res.render('bookadded.ejs', { addedBook: { name: req.body.name, price: req.body.price } })
     })
 })
 
