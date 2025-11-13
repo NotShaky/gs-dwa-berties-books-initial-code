@@ -55,11 +55,7 @@ router.post('/bookadded', function(req, res, next) {
         if (err) {
             return next(err);
         }
-        // redirect to the list route so it re-queries the DB and shows the new book
-        // Option A: relative redirect (works when this router is mounted at /books)
         res.redirect('list');
-        // Option B: explicit use of router mount (works robustly if mount point varies)
-        // res.redirect(req.baseUrl + '/list');
     });
 });
 
