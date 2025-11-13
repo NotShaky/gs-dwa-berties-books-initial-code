@@ -1,22 +1,53 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Bargain books — <%= shopData.shopName %></title>
     <link rel="stylesheet" type="text/css" href="/main.css" />
+    <style>
+      :root { --accent:#2b7a78; --muted:#6b6b6b; --bg:#f7f7f9; }
+      body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: var(--bg); margin:24px; color:#111; }
+      .wrap { max-width:900px; margin:0 auto; }
+      h1 { color: var(--accent); margin-bottom:6px; }
+      .subtitle { color:var(--muted); margin-bottom:18px; }
+      .card { background:#fff; border-radius:8px; padding:16px; box-shadow:0 6px 18px rgba(0,0,0,0.06); }
+      ul.books { list-style:none; padding:0; margin:0; }
+      ul.books li { display:flex; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #eee; }
+      ul.books li strong { color:#111; }
+      .price { color:#0b6b6b; font-weight:700; }
+      .no-data { padding:18px; text-align:center; color:var(--muted); }
+      .actions { margin-top:14px; display:flex; gap:12px; }
+      .actions a { color: white; background: var(--accent); padding:8px 12px; border-radius:6px; text-decoration:none; font-weight:600; }
+      @media (max-width:640px){
+        ul.books li { flex-direction:column; align-items:flex-start; gap:6px; }
+      }
+    </style>
   </head>
   <body>
-    <h1>Bargain books (under £20)</h1>
+    <div class="wrap">
+      <h1>Bargain books (under £20)</h1>
+      <p class="subtitle">Affordable picks from <%= shopData.shopName %></p>
 
-    <% if (!books || books.length === 0) { %>
-      <p>No bargain books found.</p>
-    <% } else { %>
-      <ul>
-        <% books.forEach(b => { %>
-          <li><strong><%= b.name %></strong> — £<%= (typeof b.price === 'number' ? b.price : Number(b.price)).toFixed(2) %></li>
-        <% }) %>
-      </ul>
-    <% } %>
+      <div class="card">
+        <% if (!books || books.length === 0) { %>
+          <div class="no-data">No bargain books found.</div>
+        <% } else { %>
+          <ul class="books" role="list">
+            <% books.forEach(b => { %>
+              <li>
+                <span><strong><%= b.name %></strong></span>
+                <span class="price">£<%= (typeof b.price === 'number' ? b.price : Number(b.price)).toFixed(2) %></span>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
 
-    <p><a href="/books/list">Back to full list</a></p>
+        <div class="actions">
+          <a href="/books/list">Back to full list</a>
+          <a href="/books/addbook">Add a book</a>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
