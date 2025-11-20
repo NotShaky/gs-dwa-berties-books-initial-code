@@ -9,6 +9,7 @@ require('dotenv').config()
 
 // Create the express application object
 const app = express()
+const port = 8000
 
 // Tell Express that we want to use EJS as the templating engine
 app.set('view engine', 'ejs')
@@ -24,6 +25,7 @@ app.locals.shopData = {shopName: "Bertie's Books"}
 
 // Define the database connection pool (read creds from env vars)
 const db = mysql.createPool({
+    host: process.env.BB_HOST || process.env.DB_HOST || 'localhost',
     user: process.env.BB_USER || process.env.DB_USER || 'berties_books_app',
     password: process.env.BB_PASSWORD || process.env.DB_PASS || 'qwertyuiop',
     database: process.env.BB_DATABASE || process.env.DB_NAME || 'berties_books',
