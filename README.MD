@@ -1,36 +1,45 @@
-# Berties Books
+# Bertie's Books 
 
-Sample code for Dynamic Web Applications module.
+Small Express + EJS app with a MySQL backend. Supports books, user registration/login and a login audit.
 
-Uses node.js with Express and EJS.
+Prerequisites
+- Node.js (14+)
+- MySQL server
+- dotenv 
 
-To install and run:
+Quick setup
+1. Install dependencies:
+   npm install
 
-npm install
-node index.js
+2. Create database and tables (run on the VM or locally)
 
-# dotenv
+3. Start the app:
+   node index.js
 
-This project uses the dotenv module to keep sensitive credentials out of source control.
+Key routes
+- Home: /
+- Books: /books/list, /books/addbook, /books/search
+- Users: /users/register, /users/login, POST /users/loggedin
+- Audit: /users/audit
 
-- Install: npm install dotenv --save
-- Create a file named `.env` in the project root (copy from `.env.example`) and set your real DB credentials:
-  DB_HOST, DB_USER, DB_PASS, DB_NAME, PORT
-- The app loads variables with require('dotenv').config() in index.js and uses process.env.* when creating the DB pool.
-- Make sure `.env` is listed in `.gitignore` so credentials are not committed.
-- On the VM you can either create a `.env` file there or set environment variables via the system environment instead of a `.env` file for production.
+## dotenv
+
+- This app uses the dotenv module to keep DB credentials out of source control.
+- The app loads environment variables at startup with:
+  require('dotenv').config()
+  (see index.js). The DB pool reads: BB_USER, BB_PASSWORD, BB_DATABASE.
+- Create a `.env` in the project root (copy `.env.example`) and set real values:
+  BB_USER='berties_books_app'
+  BB_PASSWORD='qwertyuiop'
+  BB_DATABASE='berties_books'
 
 ## audit
 
-Login attempts (successful and failed) are recorded in the `audit_log` table. The table schema is in `sql/create_audit_table.sql`. Each record stores:
-- username (if provided)
-- success (1/0)
-- reason (short text like "incorrect password" or "user not found")
-- ip address and user-agent
-- timestamp (created_at)
+- Purpose: record successful and failed login attempts for monitoring and troubleshooting.
+- Storage: rows are inserted into the `audit_log` table (see `sql/create_audit_table.sql`). Columns include:
+  - `id`, `username`, `success` (1/0), `reason` (text), `ip`, `user_agent`, `created_at`.
+- How it's recorded: the helper function `recordAudit(username, success, reason, req)` in `routes/users.js` inserts an audit row (non-blocking). It is called from the login flow (`POST /users/loggedin`) for every attempt.
+- Viewing: the audit history is rendered at `GET /users/audit` using `views/audit.ejs`. The route queries recent records (most recent first).
+- Setup: create the table on the VM or locally:
 
-Implementation notes:
-- The POST /users/loggedin handler calls a helper `recordAudit(username, success, reason, req)` to insert an audit row for every attempt.
-- The audit history is viewable at GET /users/audit (renders `views/audit.ejs`).
-- Run the SQL on the VM to create the table before testing:
-  `mysql -u root -p berties_books < sql/create_audit_table.sql`
+- Privacy note: IP and user-agent are stored for audit purposes — treat this data appropriately and avoid exposing it publicly.
